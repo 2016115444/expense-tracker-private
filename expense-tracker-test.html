@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Expense Tracker</title>
+  <script src="https://mavue.mavo.io/v-app/v-app.js" type="module"></script>
+</head>
+<body>
+  <div id="app">
+    <h1>Expense Tracker</h1>
+
+    <ma-data v-model="expenses" mv-storage="local" mv-storage-key="my-expenses"></ma-data>
+
+    <form id="expense-form">
+      <input id="item" placeholder="Item Name" required>
+      <input id="amount" type="number" placeholder="Amount" required>
+      <button type="submit">Add Expense</button>
+    </form>
+
+    <button id="save-github">Save to GitHub</button>
+
+    <h2>Expenses:</h2>
+    <ul>
+      <li v-for="expense in expenses">{{ expense.item }} - ${{ expense.amount }}</li>
+    </ul>
+  </div>
+
+  <script type="module">
+    const mvueData = document.querySelector("ma-data[v-model='expenses']");
+    const form = document.getElementById("expense-form");
+    const saveBtn = document.getElementById("save-github");
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const newExpense = {
+        item: document.getElementById("item").value,
+        amount: parseFloat(document.getElementById("amount").value)
+      };
+      mvueData.data.push(newExpense);
+      mvueData.save(); // persist in localStorage
+      form.reset();
+    });
+
+    saveBtn.addEventListener("click", async () => {
+      const res = await fetch("http://localhost:3000/update-expenses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ expenses: mvueData.data })
+      });
+      const result = await res.json();
+      console.log(result);
+      alert("Expenses saved to GitHub (private repo)!");
+    });
+  </script>
+</body>
+</html>
