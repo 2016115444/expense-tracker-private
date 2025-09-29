@@ -3,21 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Expense Tracker</title>
-  <script src="https://mavue.mavo.io/v-app/v-app.js" type="module"></script>
+  <script src="https://mavue.mavo.io/mavue.js" type="module"></script>
 </head>
 <body>
-  <div id="app">
+  <div id="app" v-scope="{ expenses: [] }">
     <h1>Expense Tracker</h1>
 
-    <ma-data v-model="expenses" mv-storage="local" mv-storage-key="my-expenses"></ma-data>
-
-    <form id="expense-form">
-      <input id="item" placeholder="Item Name" required>
-      <input id="amount" type="number" placeholder="Amount" required>
+    <form @submit.prevent="addExpense">
+      <input v-model="newItem" placeholder="Item Name" required>
+      <input v-model.number="newAmount" type="number" placeholder="Amount" required>
       <button type="submit">Add Expense</button>
     </form>
 
-    <button id="save-github">Save to GitHub</button>
+    <button @click="saveToGitHub">Save to GitHub</button>
 
     <h2>Expenses:</h2>
     <ul>
@@ -26,31 +24,32 @@
   </div>
 
   <script type="module">
-    const mvueData = document.querySelector("ma-data[v-model='expenses']");
-    const form = document.getElementById("expense-form");
-    const saveBtn = document.getElementById("save-github");
+    import { createApp } from "https://mavue.mavo.io/mavue.js";
 
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      const newExpense = {
-        item: document.getElementById("item").value,
-        amount: parseFloat(document.getElementById("amount").value)
-      };
-      mvueData.data.push(newExpense);
-      mvueData.save(); // persist in localStorage
-      form.reset();
-    });
-
-    saveBtn.addEventListener("click", async () => {
-      const res = await fetch("http://localhost:3000/update-expenses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expenses: mvueData.data })
-      });
-      const result = await res.json();
-      console.log(result);
-      alert("Expenses saved to GitHub (private repo)!");
-    });
+    createApp({
+      data: {
+        expenses: [],
+        newItem: "",
+        newAmount: null,
+      },
+      methods: {
+        addExpense() {
+          this.expenses.push({ item: this.newItem, amount: this.newAmount });
+          this.newItem = "";
+          this.newAmount = null;
+        },
+        async saveToGitHub() {
+          const res = await fetch("http://localhost:3000/update-expenses", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ expenses: this.expenses })
+          });
+          const result = await res.json();
+          console.log(result);
+          alert("Expenses saved to GitHub!");
+        }
+      }
+    }).mount("#app");
   </script>
 </body>
 </html>
