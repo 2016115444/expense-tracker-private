@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cors()); // Allow frontend requests
 
-const TOKEN = "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"; // Keep this secret
+const TOKEN = "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"; // Keep this secret
 const REPO = "2016115444/expense-tracker-private";
 const FILE_PATH = "expenses.json";
 const BRANCH = "main"; // or master
