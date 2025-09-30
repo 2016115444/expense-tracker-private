@@ -28,11 +28,13 @@
   import { createApp } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
  
   createApp({
-    data: {
-      expenses: [],
-      newItem: "",
-      newAmount: null,
-    },
+    data() {
+      return {
+        expenses: [],
+        newItem: "",
+        newAmount: null
+      }
+    }
     methods: {
       addExpense() {
         // v-model.number should already coerce amount; this guards for safety
