@@ -46,7 +46,7 @@
       },
       async saveToGitHub() {
         try {
-          const res = await fetch("http://localhost:3000/update-expenses", {
+          const res = await fetch("https://localhost:3000/update-expenses", {
             method: "POST",                          // <-- was PUT
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ expenses: this.expenses })
