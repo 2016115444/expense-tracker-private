@@ -4,7 +4,9 @@ import cors from "cors";
 
 const app = express();
 app.use(express.json());
-app.use(cors()); // Allow frontend requests
+app.use(cors({
+  origin: "https://2016115444.github.io/expense-tracker-private/expense-tracker-test.html"  // or whatever your front-end URL is
+    })); // Allow frontend requests
 
 const TOKEN = "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"; // Keep this secret
 const REPO = "2016115444/expense-tracker-private";
@@ -43,10 +45,13 @@ app.post("/update-expenses", async (req, res) => {
     });
 
     const result = await response.json();
+
+    if (!response.ok) {
+      console.error("GitHub API error:", result);
+      return res.status(response.status).json({ error: result });
+    }
+
     res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+  });
 
 app.listen(3000, () => console.log("Backend running on http://localhost:3000"));
