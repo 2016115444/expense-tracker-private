@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Expense Tracker</title>
-  <script src="https://mavue.mavo.io/mavue.js" type="module"></script>
+  <!-- <script src="https://mavue.mavo.io/mavue.js" type="module"></script> -->
 </head>
 <body>
   <div id="app" v-scope="{ expenses: [] }">
@@ -24,7 +24,7 @@
   </div>
 
   <script type="module">
-  import { createApp } from "https://mavue.mavo.io/mavue.js";
+  import { createApp } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
  
   createApp({
     data: {
