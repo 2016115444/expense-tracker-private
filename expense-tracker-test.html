@@ -24,33 +24,48 @@
   </div>
 
   <script type="module">
-    import { createApp } from "https://mavue.mavo.io/mavue.js";
-
-    createApp({
-      data: {
-        expenses: [],
-        newItem: "",
-        newAmount: null,
+  import { createApp } from "https://mavue.mavo.io/mavue.js";
+ 
+  createApp({
+    data: {
+      expenses: [],
+      newItem: "",
+      newAmount: null,
+    },
+    methods: {
+      addExpense() {
+        // v-model.number should already coerce amount; this guards for safety
+        const amount = Number(this.newAmount);
+        if (!this.newItem || Number.isNaN(amount)) return;
+        this.expenses.push({ item: this.newItem, amount });
+        this.newItem = "";
+        this.newAmount = null;
       },
-      methods: {
-        addExpense() {
-          this.expenses.push({ item: this.newItem, amount: this.newAmount });
-          this.newItem = "";
-          this.newAmount = null;
-        },
-        async saveToGitHub() {
-          alert("test");
+      async saveToGitHub() {
+        try {
           const res = await fetch("http://localhost:3000/update-expenses", {
-            method: "POST",
+            method: "POST",                          // <-- was PUT
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ expenses: this.expenses })
           });
+ 
           const result = await res.json();
+ 
+          if (!res.ok) {
+            console.error("Backend/GitHub error:", result);
+            alert(`Save failed: ${result?.error?.message || res.statusText}`);
+            return;
+          }
+ 
           console.log(result);
           alert("Expenses saved to GitHub!");
+        } catch (e) {
+          console.error(e);
+          alert("Network error saving expenses.");
         }
       }
-    }).mount("#app");
-  </script>
+    }
+  }).mount("#app");
+</script>
 </body>
 </html>
